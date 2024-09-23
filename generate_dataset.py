@@ -31,11 +31,13 @@ theta = random.uniform(-20,20)
 rot_mat = cv2.getRotationMatrix2D( (FRAME_WIDTH/2, FRAME_HEIGHT/2) , theta, 1.0)
 blur_kernel = (5,5)
 
-# Points corresponding to writst, finger base, and finger tips
+# Points corresponding to thumb, finger base, and finger tips
+# First 5 indices: base
+# Last 5 indices: tips
 points_of_interest = [1,5,9,13,17, 4,8,12,16,20]
 
 
-def generate_dataset(label, dataset_size, create_new=0):
+def generate_dataset(label, dataset_size, create_new=0, name = 'vbh_dataset.csv'):
     webcam = cv2.VideoCapture(0)
     webcam.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
     webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
@@ -47,7 +49,7 @@ def generate_dataset(label, dataset_size, create_new=0):
     else:
         mode='w'
 
-    with open('vbh_dataset.csv', mode=mode, newline='') as file:
+    with open(name, mode=mode, newline='') as file:
         writer = csv.writer(file)
 
         while(num_samp<dataset_size):
