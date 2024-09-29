@@ -8,10 +8,11 @@ import csv
 import numpy as np
 import random
 
+from feature_extraction import FeatureExtractor
+
 random.seed(1)
 
 class Dataset:
-
     def __init__(self, filepath=None):
         self.filepath = filepath
 
@@ -20,10 +21,11 @@ class Dataset:
             data = csv.reader(csvfile, delimiter=',')
             data_matrix = []
             for row in data:
-                feats = [float(x) for x in row[:-1]]
-                label = [int(row[-1])]
-                data_matrix.append(feats+label)
-
+                #convert to features here! 
+                data_vec = [float(x) for x in row[:-1]]
+                label = int(row[-1])
+                train_feats = FeatureExtractor(data_vec,label)
+                data_matrix.append(train_feats)
         data_matrix = np.array(data_matrix)
         random.shuffle(data_matrix)
         random.shuffle(data_matrix)
@@ -45,17 +47,42 @@ class Dataset:
     
 
 class KNN:
-    # Either build a KNN model from scatch or use scikit
-    def __init__(self):
-        pass
+    def __init__(self, k=0):
+        self.k = k
+        self.neighbours=None
+
+    def load_data(self,data,label):
+        self.data = data
+        self.label = label
+
+    def predict(self,x):
+        self.feature_vec = x
+        self.find_nearest_neighbours()
+
+    def find_nearest_neighbours(self):
+        dist_list = []
+        for point in self.data:
+            dist = 0
+            for i in range(len(point)):
+                dist+= (point[i] - self.feature_vec[i])**2
+            dist_list.append( dist**0.5 )
+        
+        distance = list(zip(dist_list, self.label))
+        print("BEFORE : .", distance)
+        distance.sort(key= lambda x : x[0])
+        self.neighbours = [distance[k][1] for k in range(self.k)]
+
 
 
 if __name__=="__main__":
-    path = "data_features.csv"
+    path = "vbh_dataset.csv"
     dataset = Dataset(path)
     dataset.load_data()
     dataset.train_test_split(0.75)
     train_data, train_labels = dataset.get_train_data()
     test_data, test_labels = dataset.get_test_data()
-    print(len(train_data), len(train_labels))
-    print(len(test_data), len(test_labels))
+    knn = KNN(k = 3)
+
+    knn.load_data(train_data, train_labels)
+    knn.predict(test_data[0])
+    print(knn.neighbours)
