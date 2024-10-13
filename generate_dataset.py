@@ -108,7 +108,7 @@ def main():
     }
 
     generate_dataset(label = classes[label], dataset_size=dataset_size, create_new = create_new)
-
+    print("Data created for class: ", label)
 if __name__=="__main__":
     main()
 
