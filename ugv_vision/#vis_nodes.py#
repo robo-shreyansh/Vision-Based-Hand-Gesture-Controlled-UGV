@@ -28,6 +28,7 @@ class UGV_Cam (Node):
     
     def img_callback_pub(self):
         ret, frame = self.cam.read()
+        frame = cv2.resize(frame, (255,255))
 	frame = cv2.resize(frame, (255,255))
 	imgmsg = self.cv_bridge.cv2_to_imgmsg(frame)
         self.img_pub.publish(imgmsg)
