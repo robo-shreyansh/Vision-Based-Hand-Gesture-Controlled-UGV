@@ -22,13 +22,13 @@ class UGV_Cam (Node):
         super().__init__("ugv_cam")
 
         self.img_pub = self.create_publisher(Image, "/img_data", 10)
-        self.create_timer(0.01, self.img_callback_pub)
+        self.create_timer(0.1, self.img_callback_pub)
         self.cv_bridge = CvBridge()
         self.cam = cv2.VideoCapture(0)
     
     def img_callback_pub(self):
         ret, frame = self.cam.read()
-	frame = cv2.resize(frame, (255,255))
-	imgmsg = self.cv_bridge.cv2_to_imgmsg(frame)
+        frame = cv2.resize(frame, (255,255))
+        imgmsg = self.cv_bridge.cv2_to_imgmsg(frame)
         self.img_pub.publish(imgmsg)
 
