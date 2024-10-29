@@ -94,7 +94,30 @@ class KNN:
         ## Get the label of the most occuring point.
         pass
 
+class LogisticRegression():
+    def __init__(self):
+        pass
 
+    def loadData(self):
+        pass
+
+    def train(self):
+        pass
+
+    def softmax(self, score):
+        return np.exp(score)/np.sum(self.scores)
+
+    def prediction(self):
+        weight = []
+        scores = []
+        for i in range(len(classes)):
+            scores.append(weight[i].T@self.x + self.bias[i])
+        probabilities= []
+        for score in self.scores:
+            probabilities.append(np.exp(score)/np.sum(scores))
+        
+        return max(probabilities) # index of this is the answer. 
+    pass
 
 if __name__=="__main__":
     FRAME_WIDTH=640
