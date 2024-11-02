@@ -5,6 +5,7 @@
 # Save in whichever format#
 
 import csv
+from models import Dataset, KNN
 import numpy as np
 import random
 import cv2
@@ -13,7 +14,6 @@ from statistics import mode
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-
 
 # Declaring the frame width and height
 FRAME_WIDTH=640
@@ -28,96 +28,6 @@ options = vision.HandLandmarkerOptions(base_options=base_options,
 detector = vision.HandLandmarker.create_from_options(options)
 
 from feature_extraction import FeatureExtractor
-
-random.seed(2)
-
-class Dataset:
-    def __init__(self, filepath=None):
-        self.filepath = filepath
-
-    def load_data(self):
-        with open(self.filepath, mode='r', newline='') as csvfile:
-            data = csv.reader(csvfile, delimiter=',')
-            data_matrix = []
-            for row in data:
-                #convert to features here! 
-                data_vec = [float(x) for x in row[:-1]]
-                label = int(row[-1])
-                train_feats = FeatureExtractor(data_vec,label)
-                data_matrix.append(train_feats)
-        data_matrix = np.array(data_matrix)
-        random.shuffle(data_matrix)
-        random.shuffle(data_matrix)
-
-        self.labels = data_matrix[:, -1].reshape(-1)
-        self.data_matrix = np.array(data_matrix[:,:-1])
-    
-    def train_test_split(self,train_len = 0.8):
-        self.train_data = self.data_matrix[:int(train_len*len(self.labels)),:]
-        self.train_labels = self.labels[:int(train_len*len(self.labels))]
-        self.test_data = self.data_matrix[int(train_len*len(self.labels)):, :]
-        self.test_labels = self.labels[int(train_len*len(self.labels)):]
-
-    def get_train_data(self):
-        return self.train_data, self.train_labels
-    
-    def get_test_data(self):
-        return self.test_data, self.test_labels
-    
-
-class KNN:
-    def __init__(self, k=0):
-        self.k = k
-        self.neighbours=None
-
-    def load_data(self,data,label):
-        self.data = data
-        self.label = label
-
-    def predict(self,x):
-        self.feature_vec = x
-        self.find_nearest_neighbours()
-
-    def find_nearest_neighbours(self):
-        dist_list = []
-        for point in self.data:
-            dist = 0
-            for i in range(len(point)):
-                dist+= (point[i] - self.feature_vec[i])**2
-            dist_list.append( dist**0.5 )
-        
-        distance = list(zip(dist_list, self.label))
-        distance.sort(key= lambda x : x[0])
-        self.neighbours = [distance[k][1] for k in range(self.k)]
-    
-    def get_label(self):
-        ## Get the label of the most occuring point.
-        pass
-
-class LogisticRegression():
-    def __init__(self):
-        pass
-
-    def loadData(self):
-        pass
-
-    def train(self):
-        pass
-
-    def softmax(self, score):
-        return np.exp(score)/np.sum(self.scores)
-
-    def prediction(self):
-        weight = []
-        scores = []
-        for i in range(len(classes)):
-            scores.append(weight[i].T@self.x + self.bias[i])
-        probabilities= []
-        for score in self.scores:
-            probabilities.append(np.exp(score)/np.sum(scores))
-        
-        return max(probabilities) # index of this is the answer. 
-    pass
 
 if __name__=="__main__":
     FRAME_WIDTH=640
